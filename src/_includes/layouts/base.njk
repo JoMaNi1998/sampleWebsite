@@ -15,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS via Vite -->
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <!-- Main JS (imports Tailwind CSS via Vite) -->
+  <script type="module" src="/src/assets/js/main.js"></script>
 
   <!-- Alpine.js -->
   <script type="module">
@@ -37,13 +37,6 @@
   </main>
 
   {% include "components/footer.njk" %}
-
-  <!-- Initialize Lucide Icons -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (window.lucide) lucide.createIcons();
-    });
-  </script>
 
   <!-- Custom JS -->
   {% if jsFile %}

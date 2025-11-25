@@ -1,6 +1,10 @@
 import crypto from 'crypto';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
 import tailwindcss from "@tailwindcss/vite";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default function(eleventyConfig) {
 
@@ -13,6 +17,11 @@ export default function(eleventyConfig) {
       plugins: [
         tailwindcss()  // Aktiviert Tailwind v4 Oxide Engine + HMR
       ],
+      resolve: {
+        alias: {
+          '/src': path.resolve(__dirname, 'src')
+        }
+      },
       server: {
         port: 8080,
         open: false
