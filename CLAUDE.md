@@ -11,6 +11,7 @@
 ### Build Tool
 - **Vite** v6.x - Blitzschneller Dev Server mit HMR
 - **eleventy-plugin-vite** - Eleventy + Vite Integration
+- **@tailwindcss/vite** - Native Tailwind v4 Oxide Engine
 
 ### Frontend
 - **Tailwind CSS v4** - CSS-first Configuration (kein tailwind.config.js)
@@ -183,6 +184,21 @@ npm run dev
         │
         ▼
    localhost:8080
+```
+
+### Vite Config Referenz
+```javascript
+// .eleventy.js - Tailwind v4 + Vite Setup
+import tailwindcss from "@tailwindcss/vite";
+import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
+
+eleventyConfig.addPlugin(EleventyVitePlugin, {
+  viteOptions: {
+    plugins: [tailwindcss()],  // Oxide Engine aktivieren!
+    server: { port: 8080 },
+    build: { emptyOutDir: false }
+  }
+});
 ```
 
 ### Assets einbinden

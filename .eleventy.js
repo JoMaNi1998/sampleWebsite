@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
+import tailwindcss from "@tailwindcss/vite";
 
 export default function(eleventyConfig) {
 
@@ -9,6 +10,9 @@ export default function(eleventyConfig) {
   eleventyConfig.addPlugin(EleventyVitePlugin, {
     viteOptions: {
       clearScreen: false,
+      plugins: [
+        tailwindcss()  // Aktiviert Tailwind v4 Oxide Engine + HMR
+      ],
       server: {
         port: 8080,
         open: false
