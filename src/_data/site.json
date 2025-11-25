@@ -1,0 +1,33 @@
+{
+  "name": "Projektname",
+  "url": "https://www.example.com",
+  "description": "Beschreibung der Website",
+  "locale": "de-DE",
+  "imagekit": {
+    "url": "https://ik.imagekit.io/your-account",
+    "defaultQuality": 80,
+    "defaultFormat": "auto"
+  },
+  "contact": {
+    "phone": "+49 123 456789",
+    "phoneDisplay": "0123 / 456 789",
+    "email": "info@example.com",
+    "address": {
+      "street": "Musterstraße 1",
+      "zip": "12345",
+      "city": "Musterstadt",
+      "country": "Deutschland"
+    },
+    "hours": "Mo-Fr: 9:00 - 18:00 Uhr"
+  },
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "linkedin": "",
+    "youtube": ""
+  },
+  "seo": {
+    "titleSuffix": " | Projektname",
+    "defaultImage": "og-image.jpg"
+  }
+}

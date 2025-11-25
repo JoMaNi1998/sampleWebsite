@@ -1,0 +1,109 @@
+---
+layout: layouts/base.njk
+title: Startseite
+description: Willkommen auf unserer Website - Wir bieten erstklassige Lösungen für Ihr Unternehmen.
+permalink: /
+---
+
+{# Hero Section #}
+<section class="relative min-h-[600px] flex items-center overflow-hidden">
+  {# Background Image via ImageKit #}
+  <div class="absolute inset-0 z-0">
+    <img
+      src="{{ site.imagekit.url }}/tr:w-1920,h-800,fo-auto,f-auto,q-80/hero-bg.jpg"
+      alt=""
+      class="w-full h-full object-cover"
+      loading="eager"
+    >
+    <div class="absolute inset-0 bg-gradient-to-r from-dark/90 to-dark/50"></div>
+  </div>
+
+  <div class="container relative z-10 py-20">
+    <div class="max-w-2xl text-white">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 slide-up">
+        Willkommen bei
+        <span class="text-gradient">{{ site.name }}</span>
+      </h1>
+      <p class="text-xl text-gray-300 mb-8 animate-in">
+        {{ site.description }}
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a href="/kontakt" class="btn btn-primary">
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          Jetzt starten
+        </a>
+        <a href="/leistungen" class="btn btn-ghost text-white border border-white/30 hover:bg-white/10">
+          Mehr erfahren
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Features Section #}
+<section class="section bg-gray-50">
+  <div class="container">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Unsere Leistungen</h2>
+      <p class="text-gray-600">
+        Entdecken Sie unser umfassendes Angebot an professionellen Dienstleistungen.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {# Feature Card 1 #}
+      <div class="card group">
+        <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="rocket" class="w-7 h-7 text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Schneller Start</h3>
+        <p class="text-gray-600">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
+        </p>
+      </div>
+
+      {# Feature Card 2 #}
+      <div class="card group">
+        <div class="w-14 h-14 bg-secondary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
+          <i data-lucide="shield-check" class="w-7 h-7 text-secondary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Sicher & Zuverlässig</h3>
+        <p class="text-gray-600">
+          Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.
+        </p>
+      </div>
+
+      {# Feature Card 3 #}
+      <div class="card group">
+        <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="headphones" class="w-7 h-7 text-primary"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">24/7 Support</h3>
+        <p class="text-gray-600">
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# CTA Section #}
+<section class="section">
+  <div class="container">
+    <div class="bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-8 md:p-12 lg:p-16 text-center text-white">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Bereit loszulegen?</h2>
+      <p class="text-white/80 mb-8 max-w-xl mx-auto">
+        Kontaktieren Sie uns noch heute für eine unverbindliche Beratung und erfahren Sie, wie wir Ihnen helfen können.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/kontakt" class="btn bg-white text-primary hover:bg-gray-100">
+          Kontakt aufnehmen
+        </a>
+        <a href="tel:{{ site.contact.phone | replace(' ', '') }}" class="btn border-2 border-white text-white hover:bg-white/10">
+          <i data-lucide="phone" class="w-5 h-5"></i>
+          {{ site.contact.phoneDisplay }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

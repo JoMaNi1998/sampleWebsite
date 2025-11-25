@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="{{ site.locale }}" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% include "components/head-meta.njk" %}
+
+  <!-- Preconnect to ImageKit -->
+  <link rel="preconnect" href="https://ik.imagekit.io" crossorigin>
+  <link rel="dns-prefetch" href="https://ik.imagekit.io">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via Vite -->
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+  <!-- Alpine.js -->
+  <script type="module">
+    import Alpine from '/node_modules/alpinejs/dist/module.esm.js';
+    window.Alpine = Alpine;
+    Alpine.start();
+  </script>
+
+  <!-- Lucide Icons -->
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-white text-dark antialiased">
+
+  {% include "components/header.njk" %}
+
+  <main class="flex-1">
+    {{ content | safe }}
+  </main>
+
+  {% include "components/footer.njk" %}
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+  <!-- Custom JS -->
+  {% if jsFile %}
+  <script type="module" src="/assets/js/{{ jsFile }}"></script>
+  {% endif %}
+</body>
+</html>

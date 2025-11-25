@@ -1,0 +1,111 @@
+<header
+  x-data="{ mobileMenuOpen: false, scrolled: false }"
+  x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 20)"
+  :class="scrolled ? 'shadow-md bg-white/95 backdrop-blur-sm' : 'bg-white'"
+  class="sticky top-0 z-50 transition-all duration-300"
+>
+  <div class="container">
+    <nav class="flex items-center justify-between h-16 lg:h-20">
+
+      {# Logo #}
+      <a href="/" class="flex items-center gap-2 font-bold text-xl text-primary">
+        <svg class="w-8 h-8" viewBox="0 0 32 32" fill="currentColor">
+          <rect width="32" height="32" rx="8"/>
+        </svg>
+        <span class="hidden sm:inline">{{ site.name }}</span>
+      </a>
+
+      {# Desktop Navigation #}
+      <ul class="hidden lg:flex items-center gap-8">
+        <li>
+          <a href="/" class="text-gray-600 hover:text-primary transition-colors font-medium">
+            Home
+          </a>
+        </li>
+        <li>
+          <a href="/leistungen" class="text-gray-600 hover:text-primary transition-colors font-medium">
+            Leistungen
+          </a>
+        </li>
+        <li>
+          <a href="/ueber-uns" class="text-gray-600 hover:text-primary transition-colors font-medium">
+            Über uns
+          </a>
+        </li>
+        <li>
+          <a href="/kontakt" class="text-gray-600 hover:text-primary transition-colors font-medium">
+            Kontakt
+          </a>
+        </li>
+      </ul>
+
+      {# CTA + Mobile Toggle #}
+      <div class="flex items-center gap-4">
+        {# Phone (Desktop) #}
+        <a href="tel:{{ site.contact.phone | replace(' ', '') }}" class="hidden md:flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+          <i data-lucide="phone" class="w-4 h-4"></i>
+          <span class="font-medium">{{ site.contact.phoneDisplay }}</span>
+        </a>
+
+        {# CTA Button #}
+        <a href="/kontakt" class="hidden sm:inline-flex btn btn-primary">
+          Jetzt anfragen
+        </a>
+
+        {# Mobile Menu Button #}
+        <button
+          @click="mobileMenuOpen = !mobileMenuOpen"
+          class="lg:hidden p-2 text-gray-600 hover:text-primary transition-colors"
+          :aria-expanded="mobileMenuOpen"
+          aria-label="Menü öffnen"
+        >
+          <i x-show="!mobileMenuOpen" data-lucide="menu" class="w-6 h-6"></i>
+          <i x-show="mobileMenuOpen" x-cloak data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </nav>
+
+    {# Mobile Menu #}
+    <div
+      x-show="mobileMenuOpen"
+      x-cloak
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 -translate-y-2"
+      class="lg:hidden pb-6 border-t border-gray-100"
+    >
+      <ul class="flex flex-col gap-1 pt-4">
+        <li>
+          <a href="/" class="block py-3 px-4 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+            Home
+          </a>
+        </li>
+        <li>
+          <a href="/leistungen" class="block py-3 px-4 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+            Leistungen
+          </a>
+        </li>
+        <li>
+          <a href="/ueber-uns" class="block py-3 px-4 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+            Über uns
+          </a>
+        </li>
+        <li>
+          <a href="/kontakt" class="block py-3 px-4 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+            Kontakt
+          </a>
+        </li>
+      </ul>
+
+      {# Mobile CTA #}
+      <div class="mt-4 px-4">
+        <a href="/kontakt" class="btn btn-primary w-full justify-center">
+          Jetzt anfragen
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

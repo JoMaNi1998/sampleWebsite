@@ -1,0 +1,21 @@
+{
+  "name": "sampleWebsite",
+  "version": "2.0.0",
+  "description": "Eleventy + Vite + Tailwind v4 + ImageKit + Firebase Template",
+  "type": "module",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy",
+    "clean": "rm -rf public _site .vite",
+    "deploy": "npm run build && firebase deploy --only hosting"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "@11ty/eleventy-plugin-vite": "^5.0.0",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "alpinejs": "^3.14.0"
+  }
+}

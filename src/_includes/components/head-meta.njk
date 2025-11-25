@@ -1,0 +1,59 @@
+{# Page Title #}
+<title>{{ title }}{{ site.seo.titleSuffix }}</title>
+<meta name="description" content="{{ description or site.description }}">
+
+{# Canonical URL #}
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+{# Robots #}
+<meta name="robots" content="{{ robots or 'index, follow' }}">
+
+{# Open Graph #}
+<meta property="og:title" content="{{ title }}{{ site.seo.titleSuffix }}">
+<meta property="og:description" content="{{ description or site.description }}">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+<meta property="og:type" content="{{ ogType or 'website' }}">
+<meta property="og:locale" content="{{ site.locale }}">
+<meta property="og:site_name" content="{{ site.name }}">
+{% if ogImage %}
+<meta property="og:image" content="{{ site.imagekit.url }}/tr:w-1200,h-630,f-jpg/{{ ogImage }}">
+{% else %}
+<meta property="og:image" content="{{ site.imagekit.url }}/tr:w-1200,h-630,f-jpg/{{ site.seo.defaultImage }}">
+{% endif %}
+
+{# Twitter Card #}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ title }}{{ site.seo.titleSuffix }}">
+<meta name="twitter:description" content="{{ description or site.description }}">
+
+{# Favicon #}
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
+{# Theme Color #}
+<meta name="theme-color" content="#3b82f6">
+
+{# Schema.org Organization #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site.name }}",
+  "url": "{{ site.url }}",
+  "logo": "{{ site.url }}/images/logo.svg",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "{{ site.contact.phone }}",
+    "contactType": "customer service",
+    "availableLanguage": "German"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ site.contact.address.street }}",
+    "addressLocality": "{{ site.contact.address.city }}",
+    "postalCode": "{{ site.contact.address.zip }}",
+    "addressCountry": "DE"
+  }
+}
+</script>

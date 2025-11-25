@@ -1,0 +1,48 @@
+{
+  "hosting": {
+    "public": "_site",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "X-Frame-Options", "value": "DENY" },
+          { "key": "X-XSS-Protection", "value": "1; mode=block" },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          { "key": "Permissions-Policy", "value": "geolocation=(), microphone=()" }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|ico)",
+        "headers": [
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.@(css|js)",
+        "headers": [
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.@(woff|woff2|ttf|otf)",
+        "headers": [
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
+        ]
+      }
+    ]
+  }
+}

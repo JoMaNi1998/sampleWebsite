@@ -1,0 +1,122 @@
+<footer class="bg-dark text-white">
+  {# Main Footer #}
+  <div class="container py-12 lg:py-16">
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+
+      {# Company Info #}
+      <div class="lg:col-span-1">
+        <a href="/" class="inline-flex items-center gap-2 font-bold text-xl text-white mb-4">
+          <svg class="w-8 h-8 text-primary" viewBox="0 0 32 32" fill="currentColor">
+            <rect width="32" height="32" rx="8"/>
+          </svg>
+          {{ site.name }}
+        </a>
+        <p class="text-gray-400 mb-6 max-w-xs">
+          {{ site.description }}
+        </p>
+
+        {# Social Links #}
+        <div class="flex gap-4">
+          {% if site.social.facebook %}
+          <a href="{{ site.social.facebook }}" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+            <i data-lucide="facebook" class="w-5 h-5"></i>
+          </a>
+          {% endif %}
+          {% if site.social.instagram %}
+          <a href="{{ site.social.instagram }}" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+            <i data-lucide="instagram" class="w-5 h-5"></i>
+          </a>
+          {% endif %}
+          {% if site.social.linkedin %}
+          <a href="{{ site.social.linkedin }}" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+            <i data-lucide="linkedin" class="w-5 h-5"></i>
+          </a>
+          {% endif %}
+          {% if site.social.youtube %}
+          <a href="{{ site.social.youtube }}" target="_blank" rel="noopener" class="text-gray-400 hover:text-white transition-colors" aria-label="YouTube">
+            <i data-lucide="youtube" class="w-5 h-5"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      {# Quick Links #}
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Navigation</h3>
+        <ul class="space-y-3">
+          <li>
+            <a href="/" class="text-gray-400 hover:text-white transition-colors">Home</a>
+          </li>
+          <li>
+            <a href="/leistungen" class="text-gray-400 hover:text-white transition-colors">Leistungen</a>
+          </li>
+          <li>
+            <a href="/ueber-uns" class="text-gray-400 hover:text-white transition-colors">Über uns</a>
+          </li>
+          <li>
+            <a href="/kontakt" class="text-gray-400 hover:text-white transition-colors">Kontakt</a>
+          </li>
+        </ul>
+      </div>
+
+      {# Legal Links #}
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Rechtliches</h3>
+        <ul class="space-y-3">
+          <li>
+            <a href="/impressum" class="text-gray-400 hover:text-white transition-colors">Impressum</a>
+          </li>
+          <li>
+            <a href="/datenschutz" class="text-gray-400 hover:text-white transition-colors">Datenschutz</a>
+          </li>
+          <li>
+            <a href="/agb" class="text-gray-400 hover:text-white transition-colors">AGB</a>
+          </li>
+          <li>
+            <a href="/cookie" class="text-gray-400 hover:text-white transition-colors">Cookie-Richtlinie</a>
+          </li>
+        </ul>
+      </div>
+
+      {# Contact #}
+      <div>
+        <h3 class="font-semibold text-lg mb-4">Kontakt</h3>
+        <ul class="space-y-3 text-gray-400">
+          <li class="flex items-start gap-3">
+            <i data-lucide="map-pin" class="w-5 h-5 text-primary shrink-0 mt-0.5"></i>
+            <span>
+              {{ site.contact.address.street }}<br>
+              {{ site.contact.address.zip }} {{ site.contact.address.city }}
+            </span>
+          </li>
+          <li>
+            <a href="tel:{{ site.contact.phone | replace(' ', '') }}" class="flex items-center gap-3 hover:text-white transition-colors">
+              <i data-lucide="phone" class="w-5 h-5 text-primary shrink-0"></i>
+              {{ site.contact.phoneDisplay }}
+            </a>
+          </li>
+          <li>
+            <a href="mailto:{{ site.contact.email }}" class="flex items-center gap-3 hover:text-white transition-colors">
+              <i data-lucide="mail" class="w-5 h-5 text-primary shrink-0"></i>
+              {{ site.contact.email }}
+            </a>
+          </li>
+          <li class="flex items-center gap-3">
+            <i data-lucide="clock" class="w-5 h-5 text-primary shrink-0"></i>
+            {{ site.contact.hours }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {# Copyright Bar #}
+  <div class="border-t border-gray-800">
+    <div class="container py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+      <p>&copy; {% year %} {{ site.name }}. Alle Rechte vorbehalten.</p>
+      <p class="flex items-center gap-1">
+        Made with <i data-lucide="heart" class="w-4 h-4 text-red-500"></i> in Deutschland
+      </p>
+    </div>
+  </div>
+</footer>
