@@ -1,6 +1,6 @@
-# CLAUDE.md - Project Stack Definition
+# CLAUDE.md - Sample Website Template
 
-> Diese Datei dient als Referenz für Claude Code und Entwickler.
+> Template für Firebase + Eleventy + Tailwind v4 Projekte
 
 ## Tech Stack
 
@@ -26,6 +26,7 @@
 ### Hosting & Deployment
 - **Firebase Hosting** - Static Hosting mit CDN
 - **Firebase Cloud Functions** (optional) - Serverless Backend
+- **GitHub Actions** - CI/CD Pipeline mit Workload Identity Federation
 
 ### Build Tools
 - **Node.js** v20+
@@ -34,8 +35,12 @@
 
 ## Projektstruktur
 
-```
+```text
 project-root/
+├── .github/
+│   └── workflows/
+│       ├── firebase-hosting-merge.yml        # CI/CD: Deploy on push (Main)
+│       └── firebase-hosting-pull-request.yml # CI/CD: Preview on PR
 ├── src/                          # Source Code (11ty Input)
 │   ├── _data/                    # Globale Daten (JSON)
 │   │   └── site.json             # Website-Konfiguration + ImageKit
@@ -81,6 +86,9 @@ Alle Konfigurationen erfolgen direkt in CSS:
   --color-primary: #3b82f6;
   --color-primary-dark: #2563eb;
   --font-family-sans: "Inter", system-ui, sans-serif;
+
+  /* Breakpoints */
+  --breakpoint-xs: 475px;
 }
 ```
 
@@ -116,29 +124,15 @@ Alle Konfigurationen erfolgen direkt in CSS:
 <div style="background-image: url('{% bgimg "bg.jpg", 1920 %}')">
 ```
 
-### ImageKit URL-Parameter
-
-| Parameter | Beschreibung | Beispiel |
-|-----------|--------------|----------|
-| `w-800` | Breite | 800px |
-| `h-600` | Höhe | 600px |
-| `f-auto` | Auto Format | WebP/AVIF |
-| `q-80` | Qualität | 80% |
-| `fo-face` | Face Focus | Gesichtserkennung |
-| `fo-auto` | Auto Focus | Smart Crop |
-| `bl-10` | Blur | Stärke 10 |
-| `r-max` | Border Radius | Rund |
-
 ### ImageKit Setup
 
-1. Account erstellen: https://imagekit.io
-2. URL in `src/_data/site.json` eintragen:
+URL in `src/_data/site.json` eintragen:
+
 ```json
 "imagekit": {
   "url": "https://ik.imagekit.io/DEIN-ACCOUNT"
 }
 ```
-3. Bilder hochladen ins ImageKit Media Library
 
 ---
 
@@ -152,7 +146,7 @@ npm run dev              # Startet auf http://localhost:8080
 npm run build            # Production Build nach _site/
 
 # Deployment
-firebase deploy          # Deploy zu Firebase Hosting
+firebase deploy          # Manuelles Deploy (nur wenn eingeloggt)
 
 # Clean
 npm run clean            # Löscht _site/ und .vite/ Ordner
@@ -160,209 +154,89 @@ npm run clean            # Löscht _site/ und .vite/ Ordner
 
 ---
 
+## GitHub Actions & CI/CD (Workload Identity)
+
+### Architektur
+
+Das Projekt nutzt **Workload Identity Federation (WIF)**. Es werden **keine langlebigen JSON-Keys** in GitHub Secrets gespeichert!
+
+### Workflow Konfiguration (Critical!)
+
+Damit Firebase und Google Cloud Auth zusammenspielen, müssen in den YAML-Dateien folgende Parameter **zwingend** gesetzt sein:
+
+1. **Permissions:** `id-token: write`
+2. **Google Auth Action:** Muss `create_credentials_file: true` und `export_environment_variables: true` haben.
+3. **Scopes:** `access_token_scopes` müssen explizit für Firebase gesetzt werden.
+
+```yaml
+# Snippet für .github/workflows/*.yml
+- id: 'auth'
+  uses: 'google-github-actions/auth@v2'
+  with:
+    workload_identity_provider: 'projects/NUMMER/locations/global/workloadIdentityPools/POOL/providers/PROVIDER'
+    service_account: 'EMAIL@PROJECT.iam.gserviceaccount.com'
+    create_credentials_file: true  # Zwingend für Firebase CLI/Action
+    export_environment_variables: true
+    access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+```
+
+### Deployment Methoden
+
+- **Merge (Main):** Nutzt `firebase-tools` (CLI) direkt, da dies robuster mit WIF ist.
+- **Pull Request:** Nutzt `FirebaseExtended/action-hosting-deploy` für Preview-URLs (benötigt das JSON aus `steps.auth.outputs.credentials_json`).
+
+---
+
 ## Vite Integration
 
-### Vorteile
-- **Instant HMR** - CSS/JS Änderungen ohne Page Reload
-- **Schneller Dev Server** - Kein Warten auf Rebuilds
-- **Automatisches Bundling** - JS/CSS wird optimiert
-- **Asset Hashing** - Automatische Cache-Busting Dateinamen
+### Konfiguration
 
-### Wie es funktioniert
-```
-npm run dev
-    │
-    ▼
-┌──────────────┐
-│   Eleventy   │  → Kompiliert .njk → HTML
-└──────────────┘
-        │
-        ▼
-┌──────────────┐
-│    Vite      │  → Served HTML + HMR für CSS/JS
-└──────────────┘
-        │
-        ▼
-   localhost:8080
-```
+Die Integration läuft über `@11ty/eleventy-plugin-vite` in `.eleventy.js`.
 
-### Vite Config Referenz
 ```javascript
-// .eleventy.js - Tailwind v4 + Vite Setup
-import tailwindcss from "@tailwindcss/vite";
-import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
-
 eleventyConfig.addPlugin(EleventyVitePlugin, {
   viteOptions: {
-    plugins: [tailwindcss()],  // Oxide Engine aktivieren!
+    plugins: [tailwindcss()],  // Tailwind v4 Plugin
     server: { port: 8080 },
     build: { emptyOutDir: false }
   }
 });
 ```
 
-### Assets einbinden
-```html
-<!-- CSS via Vite (in base.njk) - Link-Tag für optimales Laden -->
-<link rel="stylesheet" href="/assets/css/main.css">
-
-<!-- JS als ES Module -->
-<script type="module" src="/assets/js/main.js"></script>
-```
-
 ---
 
 ## Konventionen
 
-### Dateinamen
-- Seiten: `kebab-case.njk` (z.B. `ueber-uns.njk`)
-- Components: `kebab-case.njk` (z.B. `service-card.njk`)
-- Bilder auf ImageKit: `kebab-case.jpg`
+### Dateinamen & Struktur
 
-### Nunjucks Templates
-- Layouts erweitern `base.njk`
-- Components werden mit `{% include %}` eingebunden
-- Daten aus `_data/` sind global verfügbar
+- **Seiten:** `kebab-case.njk`
+- **Components:** `kebab-case.njk` (in `_includes/components/`)
+- **Bilder:** `kebab-case.jpg` (in ImageKit & lokal)
 
-### CSS (Tailwind v4)
-- Tailwind Utility Classes bevorzugen
-- Custom Styles in `@layer components { }`
-- Farben in `@theme { }` definieren
-- Custom Properties verwenden: `var(--color-primary)`
+### JavaScript (Alpine.js)
 
-### JavaScript
-- Alpine.js für DOM-Interaktionen
-- `x-data`, `x-show`, `x-on:click` für Komponenten
-- Lucide Icons mit `data-lucide="icon-name"`
-- **Wichtig:** `lucide.createIcons()` muss nach DOMContentLoaded aufgerufen werden
+- Alpine.js wird für Interaktivität genutzt (Mobile Menu, Modals).
+- **Icons:** Lucide Icons via `data-lucide="..."`. `lucide.createIcons()` Aufruf beachten.
 
 ---
 
-## Performance Optimierungen
+## Performance
 
-### Bilder (ImageKit)
-- Automatische WebP/AVIF Konvertierung
-- Responsive srcset
-- Lazy Loading
-- Face Detection für Avatare
-
-### CSS
-- Tailwind v4 ist ~50% schneller als v3
-- Automatisches Purging
-- CSS Custom Properties
-
-### HTML
-- Minification in Production
-- Asset Hashing für Cache Busting
-
-### Caching (Firebase)
-| Asset Type | Cache Duration |
-|------------|----------------|
-| HTML | no-cache |
-| CSS/JS | 1 Jahr |
-| Images | 1 Jahr |
-| Fonts | 1 Jahr |
-
-### Preconnects
-```html
-<link rel="preconnect" href="https://ik.imagekit.io">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-```
-
----
-
-## Security Headers
-
-Die folgenden Security Headers sind in `firebase.json` konfiguriert:
-
-| Header | Wert |
-|--------|------|
-| X-Content-Type-Options | nosniff |
-| X-Frame-Options | DENY |
-| X-XSS-Protection | 1; mode=block |
-| Referrer-Policy | strict-origin-when-cross-origin |
-| Permissions-Policy | geolocation=(), microphone=() |
-
----
-
-## SEO Features
-
-- Meta Tags Component (`head-meta.njk`)
-- Open Graph Images via ImageKit
-- Schema.org Organization Markup
-- Canonical URLs
-- Sitemap (`sitemap.njk`)
-- robots.txt
-
----
-
-## Komponenten
-
-### Button Classes
-```html
-<a class="btn btn-primary">Primary</a>
-<a class="btn btn-secondary">Secondary</a>
-<a class="btn btn-outline">Outline</a>
-<a class="btn btn-ghost">Ghost</a>
-```
-
-### Card
-```html
-<div class="card">
-  <h3>Title</h3>
-  <p>Content</p>
-</div>
-```
-
-### Section
-```html
-<section class="section">
-  <div class="container">
-    <!-- Content -->
-  </div>
-</section>
-```
-
-### Input
-```html
-<input type="text" class="input" placeholder="...">
-```
-
----
-
-## Ports
-
-| Service | Port |
-|---------|------|
-| Eleventy Dev Server | 8080 |
-| Firebase Emulator Hosting | 5000 |
+- **Preconnect:** ImageKit & Google Fonts in `base.njk`.
+- **Caching:** Firebase Hosting Headers sind konfiguriert (HTML no-cache, Assets 1 Jahr).
 
 ---
 
 ## Troubleshooting
 
-### Tailwind-Klassen werden nicht angewendet
-- Prüfe dass `src/assets/css/main.css` die richtige Syntax hat
-- Prüfe ob der Vite Dev Server läuft (`npm run dev`) - kein manueller CSS-Build nötig
-- Prüfe Browser DevTools Console auf Fehler
+### "Input required: firebaseServiceAccount" in GitHub Actions
 
-### Eleventy findet Template nicht
-- Prüfe `_includes` Pfad (relativ zu src/)
-- Prüfe Dateiendung (.njk)
+**Lösung:** Checken, ob `create_credentials_file: true` im Auth-Step gesetzt ist.
 
-### ImageKit Bilder laden nicht
-- Prüfe ImageKit URL in `site.json`
-- Prüfe ob Bild in ImageKit hochgeladen wurde
+### "Failed to authenticate" / "Scopes required"
 
-### Firebase Deploy schlägt fehl
-- Prüfe `firebase login` Status
-- Prüfe `.firebaserc` Projekt-ID
+**Lösung:** `access_token_scopes` im Auth-Step prüfen (muss `.../auth/firebase` enthalten).
 
----
+### Tailwind Styles fehlen
 
-## Externe Integrationen (optional)
-
-- **Google Analytics / Tag Manager** - Tracking
-- **Cookiebot** - Cookie Consent
-- **FormSystem** - Formulare (extern)
-- **HubSpot** - Meeting Scheduling
+**Lösung:** Prüfen, ob `npm run dev` läuft (Vite kompiliert CSS on-the-fly). `main.css` muss `@import "tailwindcss";` enthalten.
