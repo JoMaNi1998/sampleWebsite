@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite";
 import tailwindcss from "@tailwindcss/vite";
+import htmlmin from "html-minifier-terser";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -142,6 +143,23 @@ export default function(eleventyConfig) {
   // Slugify
   eleventyConfig.addFilter("slugify", (str) => {
     return str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+  });
+
+  // ============================================
+  // TRANSFORMS (HTML Minification)
+  // ============================================
+  eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
+    if (outputPath && outputPath.endsWith(".html")) {
+      let minified = await htmlmin.minify(content, {
+        useShortDoctype: true,
+        removeComments: true,
+        collapseWhitespace: true,
+        minifyCSS: true,
+        minifyJS: true
+      });
+      return minified;
+    }
+    return content;
   });
 
   // ============================================

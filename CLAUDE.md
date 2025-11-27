@@ -225,6 +225,38 @@ eleventyConfig.addPlugin(EleventyVitePlugin, {
 - **Preconnect:** ImageKit & Google Fonts in `base.njk`.
 - **Caching:** Firebase Hosting Headers sind konfiguriert (HTML no-cache, Assets 1 Jahr).
 
+### Minification
+
+| Asset | Tool | Automatisch |
+|-------|------|-------------|
+| **CSS** | Vite (esbuild) | Ja, bei `npm run build` |
+| **JavaScript** | Vite (esbuild) | Ja, bei `npm run build` |
+| **HTML** | html-minifier-terser | Ja, via Eleventy Transform |
+
+#### HTML-Minification
+
+Konfiguriert in `.eleventy.js` als Transform:
+
+```javascript
+import htmlmin from "html-minifier-terser";
+
+eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
+  if (outputPath && outputPath.endsWith(".html")) {
+    let minified = await htmlmin.minify(content, {
+      useShortDoctype: true,
+      removeComments: true,
+      collapseWhitespace: true,
+      minifyCSS: true,   // Minifiziert inline <style>
+      minifyJS: true     // Minifiziert inline <script>
+    });
+    return minified;
+  }
+  return content;
+});
+```
+
+**Testen:** Nach `npm run build` eine `.html` Datei in `_site/` öffnen - Code sollte komprimiert sein.
+
 ---
 
 ## Troubleshooting
