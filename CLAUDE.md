@@ -240,3 +240,93 @@ eleventyConfig.addPlugin(EleventyVitePlugin, {
 ### Tailwind Styles fehlen
 
 **Lösung:** Prüfen, ob `npm run dev` läuft (Vite kompiliert CSS on-the-fly). `main.css` muss `@import "tailwindcss";` enthalten.
+
+---
+
+## Google Tag Manager (GTM)
+
+### Setup
+
+1. **GTM Account erstellen:** [tagmanager.google.com](https://tagmanager.google.com/)
+2. **Container erstellen** und GTM-ID erhalten (Format: `GTM-XXXXXXXX`)
+3. **GTM-ID in `base.njk` ersetzen** (an 2 Stellen!)
+
+### Integration
+
+GTM wird in `src/_includes/layouts/base.njk` an zwei Stellen eingebunden:
+
+**1. Im `<head>` (direkt nach öffnendem Tag):**
+
+```html
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXXX');</script>
+<!-- End Google Tag Manager -->
+```
+
+**2. Im `<body>` (direkt nach öffnendem Tag):**
+
+```html
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+```
+
+### Platzhalter ersetzen
+
+Ersetze `GTM-XXXXXXXX` mit deiner echten GTM-ID an beiden Stellen in `base.njk`.
+
+---
+
+## Cookiebot Integration
+
+### Setup
+
+1. **Cookiebot Account erstellen:** [cookiebot.com](https://www.cookiebot.com/)
+2. **Domain hinzufügen** und Cookiebot-ID (CBID) erhalten
+3. **CBID in `base.njk` eintragen:**
+
+```html
+<!-- src/_includes/layouts/base.njk -->
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"
+        data-cbid="DEINE-COOKIEBOT-ID-HIER"
+        data-blockingmode="auto"
+        type="text/javascript"></script>
+```
+
+### Dateien
+
+| Datei | Beschreibung |
+|-------|-------------|
+| `src/_includes/layouts/base.njk` | Cookiebot Script (vor `</body>`) |
+| `src/_includes/components/footer.njk` | "Cookie-Einstellungen" Button |
+| `src/assets/css/main.css` | Cookiebot CSS-Anpassungen |
+
+### Cookie-Einstellungen Button
+
+Der Button im Footer öffnet den Cookiebot-Dialog:
+
+```html
+<button type="button" onclick="Cookiebot.show()">
+  Cookie-Einstellungen
+</button>
+```
+
+### CSS-Anpassungen
+
+Die Cookiebot-Styles sind in `main.css` am Ende definiert und nutzen die Theme-Farben:
+
+- **Primary Button ("Alle zulassen"):** `--color-primary`
+- **Secondary Button ("Auswahl erlauben"):** `--color-secondary`
+- **Ablehnen Button:** `--color-gray-500`
+- **Toggle Switches:** `--color-primary`
+- **Links:** `--color-primary`
+
+### Farben anpassen
+
+Die Cookiebot-Styles nutzen automatisch die CSS-Variablen aus `@theme`.
+Bei Farbänderungen in `@theme` werden die Cookiebot-Buttons automatisch angepasst.

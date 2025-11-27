@@ -179,3 +179,84 @@
     @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
   }
 }
+
+/* ============================================
+   COOKIEBOT CUSTOMIZATION
+   ============================================ */
+
+/* Primary Button - "Alle zulassen" */
+#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll:hover {
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary-dark) !important;
+}
+
+/* Secondary Button - "Auswahl erlauben" */
+#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowallSelection {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: #ffffff !important;
+}
+
+#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowallSelection:hover {
+  background-color: var(--color-secondary-dark) !important;
+  border-color: var(--color-secondary-dark) !important;
+}
+
+/* Decline Button - "Ablehnen" */
+#CybotCookiebotDialogBodyButtonDecline {
+  background-color: var(--color-gray-500) !important;
+  border-color: var(--color-gray-500) !important;
+  color: #ffffff !important;
+}
+
+#CybotCookiebotDialogBodyButtonDecline:hover {
+  background-color: var(--color-gray-700) !important;
+  border-color: var(--color-gray-700) !important;
+}
+
+/* Toggle switches - active state (checked) */
+#CybotCookiebotDialog .CybotCookiebotDialogBodyLevelButtonSliderWrapper input:checked + .CybotCookiebotDialogBodyLevelButtonSlider {
+  background-color: var(--color-primary) !important;
+}
+
+/* Toggle switch knob (white circle) */
+#CybotCookiebotDialog .CybotCookiebotDialogBodyLevelButtonSlider::before {
+  background-color: #ffffff !important;
+}
+
+/* Links in cookie dialog */
+#CybotCookiebotDialog a {
+  color: var(--color-primary) !important;
+}
+
+#CybotCookiebotDialog a:hover {
+  color: var(--color-primary-dark) !important;
+  text-decoration: underline !important;
+}
+
+/* Cookie category labels - primary color on hover */
+.CybotCookiebotDialogBodyLevelButtonDescription:hover {
+  color: var(--color-primary) !important;
+}
+
+/* Active tab navigation - primary color border */
+#CybotCookiebotDialogNav .CybotCookiebotDialogNavItemLink.CybotCookiebotDialogActive {
+  border-bottom-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Cookie detail expand button - primary color on hover */
+.CybotCookiebotDialogDetailBodyContentCookieContainerButton:hover {
+  color: var(--color-primary) !important;
+}
+
+/* Button hover before pseudo-element - primary color */
+#CybotCookiebotDialog button:hover:before {
+  border-color: var(--color-primary) !important;
+}
