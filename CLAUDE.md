@@ -411,6 +411,65 @@ eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
 
 ---
 
+## Security Headers
+
+### Übersicht
+
+Die `firebase.json` enthält Security Headers zum Schutz der Website:
+
+| Header | Wert | Zweck |
+|--------|------|-------|
+| `X-Content-Type-Options` | `nosniff` | Verhindert MIME-Sniffing |
+| `X-Frame-Options` | `DENY` | Schutz vor Clickjacking |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Kontrolliert Referrer-Informationen |
+| `Permissions-Policy` | `geolocation=(), microphone=(), camera=()` | Beschränkt Browser-Features |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Erzwingt HTTPS (HSTS) |
+| `Content-Security-Policy` | (siehe unten) | Kontrolliert erlaubte Quellen |
+
+### Content-Security-Policy (CSP)
+
+CSP definiert, von welchen Quellen der Browser Inhalte laden darf:
+
+```
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com https://consent.cookiebot.com;
+style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com;
+img-src 'self' data: https://ik.imagekit.io https://www.googletagmanager.com;
+connect-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://consentcdn.cookiebot.com;
+frame-src https://www.googletagmanager.com https://consentcdn.cookiebot.com;
+object-src 'none';
+base-uri 'self';
+```
+
+### Erlaubte externe Quellen
+
+| Typ | Quellen | Dienst |
+|-----|---------|--------|
+| Scripts | `unpkg.com` | Lucide Icons |
+| Scripts | `consent.cookiebot.com` | Cookiebot |
+| Scripts | `googletagmanager.com` | GTM |
+| Styles | `fonts.googleapis.com` | Google Fonts |
+| Fonts | `fonts.gstatic.com` | Google Fonts |
+| Images | `ik.imagekit.io` | ImageKit CDN |
+| Connect | `consentcdn.cookiebot.com` | Cookiebot API |
+| Connect | `*.google-analytics.com` | Analytics |
+
+### CSP anpassen
+
+Bei neuen externen Diensten muss die CSP in `firebase.json` erweitert werden:
+
+1. **Neues CDN für Scripts:** Zur `script-src` hinzufügen
+2. **Neues CDN für Styles:** Zur `style-src` hinzufügen
+3. **Neuer Image-Dienst:** Zur `img-src` hinzufügen
+4. **Neue API:** Zur `connect-src` hinzufügen
+
+### Testen
+
+Nach dem Deploy die Headers mit [securityheaders.com](https://securityheaders.com) prüfen.
+
+---
+
 ## Troubleshooting
 
 ### "The given credential is rejected by the attribute condition"
