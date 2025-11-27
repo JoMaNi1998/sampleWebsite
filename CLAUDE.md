@@ -424,52 +424,15 @@ Die `firebase.json` enthält Security Headers zum Schutz der Website:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | Kontrolliert Referrer-Informationen |
 | `Permissions-Policy` | `geolocation=(), microphone=(), camera=()` | Beschränkt Browser-Features |
 | `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | Erzwingt HTTPS (HSTS) |
-| `Content-Security-Policy` | (siehe unten) | Kontrolliert erlaubte Quellen |
 
-### Content-Security-Policy (CSP)
+### Warum kein CSP?
 
-CSP definiert, von welchen Quellen der Browser Inhalte laden darf:
+Content-Security-Policy (CSP) ist nicht aktiv, da:
+- **Alpine.js** `'unsafe-eval'` benötigt (eval für Expressions)
+- **GTM** dynamisch Scripts lädt (Clarity, Analytics, etc.)
+- **Cookiebot** mehrere Subdomains nutzt
 
-```
-default-src 'self';
-script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://unpkg.com https://consent.cookiebot.com https://consentcdn.cookiebot.com https://www.clarity.ms;
-style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com;
-img-src 'self' data: https://ik.imagekit.io https://www.googletagmanager.com https://imgsct.cookiebot.com https://www.clarity.ms;
-connect-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://consentcdn.cookiebot.com https://www.clarity.ms https://unpkg.com;
-frame-src https://www.googletagmanager.com https://consentcdn.cookiebot.com;
-object-src 'none';
-base-uri 'self';
-```
-
-**Wichtig:** `'unsafe-eval'` ist für Alpine.js erforderlich, da Alpine Expressions dynamisch auswertet.
-
-### Erlaubte externe Quellen
-
-| Typ | Quellen | Dienst |
-|-----|---------|--------|
-| Scripts | `unpkg.com` | Lucide Icons |
-| Scripts | `consent.cookiebot.com` | Cookiebot |
-| Scripts | `consentcdn.cookiebot.com` | Cookiebot CDN |
-| Scripts | `googletagmanager.com` | GTM |
-| Scripts | `www.clarity.ms` | Microsoft Clarity (via GTM) |
-| Styles | `fonts.googleapis.com` | Google Fonts |
-| Fonts | `fonts.gstatic.com` | Google Fonts |
-| Images | `ik.imagekit.io` | ImageKit CDN |
-| Images | `imgsct.cookiebot.com` | Cookiebot Tracking Pixel |
-| Images | `www.clarity.ms` | Microsoft Clarity |
-| Connect | `consentcdn.cookiebot.com` | Cookiebot API |
-| Connect | `*.google-analytics.com` | Analytics |
-| Connect | `www.clarity.ms` | Microsoft Clarity |
-
-### CSP anpassen
-
-Bei neuen externen Diensten muss die CSP in `firebase.json` erweitert werden:
-
-1. **Neues CDN für Scripts:** Zur `script-src` hinzufügen
-2. **Neues CDN für Styles:** Zur `style-src` hinzufügen
-3. **Neuer Image-Dienst:** Zur `img-src` hinzufügen
-4. **Neue API:** Zur `connect-src` hinzufügen
+Die 5 aktiven Headers bieten bereits guten Schutz. CSP kann später hinzugefügt werden, wenn alle externen Dienste bekannt sind.
 
 ### Testen
 
