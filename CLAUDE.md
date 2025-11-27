@@ -103,36 +103,72 @@ Alle Konfigurationen erfolgen direkt in CSS:
 
 ---
 
-## ImageKit Shortcodes
+## ImageKit - Direkte URLs (Empfohlen)
 
-### Verfügbare Shortcodes
+### Warum direkte URLs?
 
-```njk
-{# Einfaches Bild #}
-{% img "foto.jpg", "Alt Text", 800 %}
+- **Volle Kontrolle** über Transformationen (Breite, Höhe, Qualität)
+- **Einheitlich** - kein Mix aus Shortcodes und direkten URLs
+- **Einfacher** - keine Shortcode-Syntax lernen
 
-{# Responsive Picture #}
-{% picture "foto.jpg", "Alt Text", "(max-width: 768px) 100vw, 50vw" %}
+### URL-Format
 
-{# Avatar mit Face Detection #}
-{% avatar "person.jpg", "Name", 64 %}
-
-{# Lazy Load mit Blur Placeholder #}
-{% lazyimg "foto.jpg", "Alt Text", 1200 %}
-
-{# Background Image URL #}
-<div style="background-image: url('{% bgimg "bg.jpg", 1920 %}')">
+```
+https://ik.imagekit.io/ACCOUNT/tr:TRANSFORMATIONEN/PFAD/BILD.jpg
 ```
 
-### ImageKit Setup
+### Transformationen
 
-URL in `src/_data/site.json` eintragen:
+| Parameter | Beschreibung | Beispiel |
+|-----------|--------------|----------|
+| `w-800` | Breite 800px | `tr:w-800` |
+| `h-600` | Höhe 600px | `tr:h-600` |
+| `f-auto` | Auto-Format (WebP/AVIF) | `tr:f-auto` |
+| `q-85` | Qualität 85% | `tr:q-85` |
+| `fo-face` | Face Detection Focus | `tr:fo-face` |
 
-```json
-"imagekit": {
-  "url": "https://ik.imagekit.io/DEIN-ACCOUNT"
-}
+### Beispiele
+
+```html
+<!-- Content-Bild (800px breit) -->
+<img
+  src="https://ik.imagekit.io/ACCOUNT/tr:w-800,f-auto,q-85/ordner/bild.jpg"
+  alt="Beschreibung"
+  class="w-full h-auto"
+  loading="lazy"
+>
+
+<!-- Hintergrundbild (1920px breit) -->
+<div
+  class="bg-cover bg-center"
+  style="background-image: url('https://ik.imagekit.io/ACCOUNT/tr:w-1920,f-auto,q-80/ordner/bg.jpg')"
+>
+
+<!-- Logo mit fester Höhe -->
+<img
+  src="https://ik.imagekit.io/ACCOUNT/tr:h-80,f-auto,q-85/ordner/logo.png"
+  alt="Logo"
+  class="h-20 w-auto"
+  loading="lazy"
+>
+
+<!-- Referenz-Karten (600px breit) -->
+<img
+  src="https://ik.imagekit.io/ACCOUNT/tr:w-600,f-auto,q-85/ordner/projekt.jpg"
+  alt="Projekt"
+  class="w-full h-full object-cover"
+  loading="lazy"
+>
 ```
+
+### Empfohlene Breiten
+
+| Verwendung | Breite | Qualität |
+|------------|--------|----------|
+| Hero/Background | `w-1920` | `q-80` |
+| Content-Bilder | `w-800` | `q-85` |
+| Karten/Thumbnails | `w-600` | `q-85` |
+| Logos (Höhe) | `h-80` | `q-85` |
 
 ---
 
@@ -173,17 +209,135 @@ Damit Firebase und Google Cloud Auth zusammenspielen, müssen in den YAML-Dateie
 - id: 'auth'
   uses: 'google-github-actions/auth@v2'
   with:
-    workload_identity_provider: 'projects/NUMMER/locations/global/workloadIdentityPools/POOL/providers/PROVIDER'
-    service_account: 'EMAIL@PROJECT.iam.gserviceaccount.com'
+    workload_identity_provider: 'projects/PROJEKT-NUMMER/locations/global/workloadIdentityPools/github/providers/github-provider'
+    service_account: 'firebase-github-deploy@PROJEKT-ID.iam.gserviceaccount.com'
     create_credentials_file: true  # Zwingend für Firebase CLI/Action
     export_environment_variables: true
     access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
 ```
 
+### WICHTIG: Projekt-Nummer
+
+**Jedes GCP-Projekt hat eine eigene Projekt-Nummer!**
+
+Die Nummer findest du unter:
+- **GCP Console → IAM & Admin → Settings → Project number**
+- Oder: https://console.cloud.google.com/iam-admin/settings?project=DEIN-PROJEKT
+
+**Beispiel:**
+- Projekt `websitemeinkraftwerk` → Nummer `754482953970`
+- Projekt `websiteeinfachnachhilfe` → Nummer `279653166750`
+
+### Attribute Condition (GCP)
+
+Im Workload Identity Provider muss die Condition das GitHub-Repo erlauben:
+
+```
+assertion.repository == "USERNAME/REPO-NAME"
+```
+
+Oder für alle Repos eines Users:
+```
+assertion.repository.startsWith("USERNAME/")
+```
+
+**Einstellungen in GCP Console:**
+1. IAM & Admin → Workload Identity Federation
+2. Pool `github` auswählen
+3. Provider `github-provider` bearbeiten
+4. Attribute Condition anpassen
+
 ### Deployment Methoden
 
 - **Merge (Main):** Nutzt `firebase-tools` (CLI) direkt, da dies robuster mit WIF ist.
 - **Pull Request:** Nutzt `FirebaseExtended/action-hosting-deploy` für Preview-URLs (benötigt das JSON aus `steps.auth.outputs.credentials_json`).
+
+### IAM Rollen für Service Account
+
+Der Service Account (`firebase-github-deploy@PROJEKT-ID.iam.gserviceaccount.com`) benötigt folgende Rollen:
+
+#### Nur Hosting (Minimum)
+
+| Rolle | Beschreibung |
+|-------|--------------|
+| Firebase Hosting-Administrator | Deploy zu Firebase Hosting |
+
+#### Mit Cloud Functions (Gen 2)
+
+| Rolle | Beschreibung |
+|-------|--------------|
+| Firebase Hosting-Administrator | Deploy zu Firebase Hosting |
+| Cloud Functions-Admin | Deploy von Cloud Functions |
+| Cloud Run Administrator | Gen 2 Functions laufen auf Cloud Run |
+| Dienstkontonutzer (Service Account User) | Erlaubt Impersonation des App Engine SA |
+| Firebase Extensions Viewer | Lesen von Extensions (wird bei Functions geprüft) |
+| Service Account Token Creator | Erstellen von Auth-Tokens für APIs |
+
+**Rollen hinzufügen:**
+1. GCP Console → IAM & Admin → IAM
+2. Service Account finden → Bearbeiten
+3. Rollen hinzufügen → Speichern
+
+---
+
+## Firebase Cloud Functions (Optional)
+
+### Gen 2 Functions Setup
+
+Cloud Functions Gen 2 laufen auf Cloud Run und bieten bessere Performance.
+
+#### Projektstruktur mit Functions
+
+```text
+project-root/
+├── functions/                    # Cloud Functions
+│   ├── index.js                  # Function Definitionen
+│   ├── package.json              # Dependencies
+│   └── .eslintrc.js              # Linting
+├── src/                          # Website Source
+└── ...
+```
+
+#### Beispiel Gen 2 Function
+
+```javascript
+// functions/index.js
+const { onRequest } = require('firebase-functions/v2/https');
+const { defineSecret } = require('firebase-functions/params');
+
+// Secrets aus Google Secret Manager
+const apiKey = defineSecret('API_KEY');
+
+exports.myFunction = onRequest(
+  {
+    region: 'europe-west1',
+    cors: true,
+    secrets: ['API_KEY']
+  },
+  async (request, response) => {
+    const key = apiKey.value();
+    // ... Function Logic
+    response.json({ success: true });
+  }
+);
+```
+
+#### Workflow für Hosting + Functions
+
+```yaml
+# .github/workflows/firebase-hosting-merge.yml
+- name: Install Functions dependencies
+  run: |
+    cd functions
+    npm ci
+    cd ..
+
+- name: Deploy Hosting
+  run: firebase deploy --only hosting --project PROJEKT-ID
+
+- name: Deploy Functions
+  run: firebase deploy --only functions --project PROJEKT-ID --force
+```
 
 ---
 
@@ -255,11 +409,38 @@ eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
 });
 ```
 
-**Testen:** Nach `npm run build` eine `.html` Datei in `_site/` öffnen - Code sollte komprimiert sein.
-
 ---
 
 ## Troubleshooting
+
+### "The given credential is rejected by the attribute condition"
+
+**Ursache:** Die Attribute Condition im GCP Workload Identity Provider erlaubt das GitHub-Repo nicht.
+
+**Lösung:**
+1. GCP Console → IAM & Admin → Workload Identity Federation
+2. Pool `github` → Provider `github-provider` bearbeiten
+3. Attribute Condition anpassen:
+   ```
+   assertion.repository == "USERNAME/REPO-NAME"
+   ```
+   Oder für alle Repos:
+   ```
+   assertion.repository.startsWith("USERNAME/")
+   ```
+
+### Falsche GCP Projekt-Nummer
+
+**Symptom:** Auth schlägt fehl, obwohl alles korrekt aussieht.
+
+**Ursache:** Die `workload_identity_provider` URL zeigt auf ein anderes GCP-Projekt.
+
+**Lösung:**
+1. Projekt-Nummer in GCP Console prüfen (IAM → Settings)
+2. In `.github/workflows/*.yml` die richtige Nummer eintragen:
+   ```yaml
+   workload_identity_provider: 'projects/RICHTIGE-NUMMER/locations/global/...'
+   ```
 
 ### "Input required: firebaseServiceAccount" in GitHub Actions
 
@@ -272,6 +453,30 @@ eleventyConfig.addTransform("htmlmin", async function (content, outputPath) {
 ### Tailwind Styles fehlen
 
 **Lösung:** Prüfen, ob `npm run dev` läuft (Vite kompiliert CSS on-the-fly). `main.css` muss `@import "tailwindcss";` enthalten.
+
+### "Missing permissions required for functions deploy"
+
+**Ursache:** Service Account fehlt `iam.serviceAccounts.ActAs` Berechtigung.
+
+**Lösung:** Rolle **"Dienstkontonutzer"** (Service Account User) zum Service Account hinzufügen.
+
+### "HTTP Error: 403, The caller does not have permission" (Extensions)
+
+**Ursache:** Service Account kann Firebase Extensions nicht lesen.
+
+**Lösung:** Rolle **"Firebase Extensions Viewer"** (oder "Firebase Extensions Publisher – Extensions Viewer (Beta)") hinzufügen.
+
+### "401 UNAUTHENTICATED" / "CREDENTIALS_MISSING"
+
+**Ursache:** WIF-Token kann nicht für API-Calls generiert werden.
+
+**Lösung:** Rolle **"Service Account Token Creator"** zum Service Account hinzufügen.
+
+### Functions Deploy schlägt fehl (Gen 2)
+
+**Ursache:** Gen 2 Functions laufen auf Cloud Run, fehlende Berechtigungen.
+
+**Lösung:** Rolle **"Cloud Run Administrator"** hinzufügen.
 
 ---
 
@@ -308,10 +513,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 ```
 
-### Platzhalter ersetzen
-
-Ersetze `GTM-XXXXXXXX` mit deiner echten GTM-ID an beiden Stellen in `base.njk`.
-
 ---
 
 ## Cookiebot Integration
@@ -323,20 +524,11 @@ Ersetze `GTM-XXXXXXXX` mit deiner echten GTM-ID an beiden Stellen in `base.njk`.
 3. **CBID in `base.njk` eintragen:**
 
 ```html
-<!-- src/_includes/layouts/base.njk -->
 <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js"
         data-cbid="DEINE-COOKIEBOT-ID-HIER"
         data-blockingmode="auto"
         type="text/javascript"></script>
 ```
-
-### Dateien
-
-| Datei | Beschreibung |
-|-------|-------------|
-| `src/_includes/layouts/base.njk` | Cookiebot Script (vor `</body>`) |
-| `src/_includes/components/footer.njk` | "Cookie-Einstellungen" Button |
-| `src/assets/css/main.css` | Cookiebot CSS-Anpassungen |
 
 ### Cookie-Einstellungen Button
 
@@ -357,8 +549,3 @@ Die Cookiebot-Styles sind in `main.css` am Ende definiert und nutzen die Theme-F
 - **Ablehnen Button:** `--color-gray-500`
 - **Toggle Switches:** `--color-primary`
 - **Links:** `--color-primary`
-
-### Farben anpassen
-
-Die Cookiebot-Styles nutzen automatisch die CSS-Variablen aus `@theme`.
-Bei Farbänderungen in `@theme` werden die Cookiebot-Buttons automatisch angepasst.
